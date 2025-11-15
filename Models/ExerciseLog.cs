@@ -24,5 +24,9 @@ namespace BeFit.Models
         [Required]
         [Range(1, 500)]
         public int Reps { get; set; }
+
+        public string ExercisedById {  get; set; }
+        [Display(Name = "Exercised by")]
+        public virtual AppUser? ExercisedBy { get; set; }
     }
 }

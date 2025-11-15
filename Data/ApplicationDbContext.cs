@@ -1,10 +1,11 @@
 ﻿using BeFit.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeFit.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -28,6 +29,13 @@ namespace BeFit.Data
                 .WithMany()
                 .HasForeignKey(el => el.TrainingSessionId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ExerciseLog>()
+                .HasOne(el => el.ExercisedBy)
+                .WithMany()
+                .HasForeignKey(el => el.ExercisedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
