@@ -26,6 +26,19 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await BeFit.Data.RoleSeeder.SeedRolesAsync(services);
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var adminEmail = "admin@admin";
+    var user = await userManager.FindByEmailAsync(adminEmail);
+    if (user != null)
+    {
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -34,7 +47,6 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -43,7 +55,6 @@ var localizationOptions = new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture(cultureInfo),
     SupportedCultures = new List<CultureInfo> { cultureInfo },
-    //SupportedUICultures = new List<CultureInfo> { cultureInfo }
 };
 
 app.UseRequestLocalization(localizationOptions);
@@ -53,6 +64,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
