@@ -31,27 +31,29 @@ namespace BeFit.Controllers
         // GET: ExerciseLogs
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.ExerciseLogs.Include(e => e.ExerciseType).Include(e => e.ExercisedBy).Include(e => e.TrainingSession);
+            var userId = GetUserId();
+
+            var applicationDbContext = _context.ExerciseLogs
+                .Include(e => e.ExerciseType)
+                .Include(e => e.ExercisedBy)
+                .Include(e => e.TrainingSession)
+                .Where(e => e.ExercisedById == userId);
+
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: ExerciseLogs/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseLog = await _context.ExerciseLogs
                 .Include(e => e.ExerciseType)
                 .Include(e => e.ExercisedBy)
                 .Include(e => e.TrainingSession)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseLog == null)
-            {
-                return NotFound();
-            }
+
+            if (exerciseLog == null) return NotFound();
 
             return View(exerciseLog);
         }
@@ -59,110 +61,122 @@ namespace BeFit.Controllers
         // GET: ExerciseLogs/Create
         public IActionResult Create()
         {
+            var userId = GetUserId();
+
             ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name");
-            ViewData["ExercisedById"] = new SelectList(_context.Users, "Id", "Id");
-            ViewData["TrainingSessionId"] = new SelectList(_context.TrainingSessions, "Id", "Id");
+            ViewData["TrainingSessionId"] = new SelectList(
+                _context.TrainingSessions
+                    .Where(ts => ts.CreatedById == userId)
+                    .Select(ts => new {
+                        ts.Id,
+                        Display = ts.StartTime.ToString("yyyy-MM-dd HH:mm")
+                    }),
+                "Id",
+                "Display"
+            );
             return View();
         }
 
         // POST: ExerciseLogs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Adult")]
-        public async Task<IActionResult> Create([Bind("Id,ExerciseTypeId,TrainingSessionId,Weight,Sets,Reps,ExercisedById")] ExerciseLogsDTO exerciseLogsDTO)
+        [Authorize]
+        public async Task<IActionResult> Create([Bind("Id,ExerciseTypeId,TrainingSessionId,Weight,Sets,Reps")] ExerciseLogsDTO exerciseLogsDTO)
         {
-            ExerciseLog exerciseLog = new ExerciseLog();
+            var userId = GetUserId();
+            if (!ModelState.IsValid)
             {
+                ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name", exerciseLogsDTO?.ExerciseTypeId);
+                ViewData["TrainingSessionId"] = new SelectList(
+                    _context.TrainingSessions
+                        .Where(ts => ts.CreatedById == userId)
+                        .Select(ts => new {
+                            ts.Id,
+                            Display = ts.StartTime.ToString("yyyy-MM-dd HH:mm")
+                        }),
+                    "Id",
+                    "Display",
+                    exerciseLogsDTO?.TrainingSessionId
+                );
+                return View(exerciseLogsDTO);
+            }
 
-            }
-            if (ModelState.IsValid)
+            var exerciseLog = new ExerciseLog
             {
-                _context.Add(exerciseLog);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name", exerciseLog.ExerciseTypeId);
-            ViewData["ExercisedById"] = new SelectList(_context.Users, "Id", "Id", exerciseLog.ExercisedById);
-            ViewData["TrainingSessionId"] = new SelectList(_context.TrainingSessions, "Id", "Id", exerciseLog.TrainingSessionId);
-            return View(exerciseLog);
+                ExerciseTypeId = exerciseLogsDTO.ExerciseTypeId,
+                TrainingSessionId = exerciseLogsDTO.TrainingSessionId,
+                Weight = exerciseLogsDTO.Weight,
+                Sets = exerciseLogsDTO.Sets,
+                Reps = exerciseLogsDTO.Reps,
+                ExercisedById = userId
+            };
+            _context.Add(exerciseLog);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ExerciseLogs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseLog = await _context.ExerciseLogs.FindAsync(id);
-            if (exerciseLog == null)
-            {
-                return NotFound();
-            }
+            if (exerciseLog == null) return NotFound();
+
             ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name", exerciseLog.ExerciseTypeId);
-            ViewData["ExercisedById"] = new SelectList(_context.Users, "Id", "Id", exerciseLog.ExercisedById);
             ViewData["TrainingSessionId"] = new SelectList(_context.TrainingSessions, "Id", "Id", exerciseLog.TrainingSessionId);
             return View(exerciseLog);
         }
 
         // POST: ExerciseLogs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ExerciseTypeId,TrainingSessionId,Weight,Sets,Reps,ExercisedById")] ExerciseLog exerciseLog)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ExerciseTypeId,TrainingSessionId,Weight,Sets,Reps")] ExerciseLog posted)
         {
-            if (id != exerciseLog.Id)
+            if (id != posted.Id) return NotFound();
+
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Model error: {error.ErrorMessage}");
+                }
             }
 
-            if (ModelState.IsValid)
+            var existing = await _context.ExerciseLogs.FindAsync(id);
+            if (existing == null) return NotFound();
+
+            existing.ExerciseTypeId = posted.ExerciseTypeId;
+            existing.TrainingSessionId = posted.TrainingSessionId;
+            existing.Weight = posted.Weight;
+            existing.Sets = posted.Sets;
+            existing.Reps = posted.Reps;
+
+            try
             {
-                try
-                {
-                    _context.Update(exerciseLog);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ExerciseLogExists(exerciseLog.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _context.Update(existing);
+                await _context.SaveChangesAsync();
             }
-            ViewData["ExerciseTypeId"] = new SelectList(_context.ExerciseTypes, "Id", "Name", exerciseLog.ExerciseTypeId);
-            ViewData["ExercisedById"] = new SelectList(_context.Users, "Id", "Id", exerciseLog.ExercisedById);
-            ViewData["TrainingSessionId"] = new SelectList(_context.TrainingSessions, "Id", "Id", exerciseLog.TrainingSessionId);
-            return View(exerciseLog);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ExerciseLogExists(existing.Id)) return NotFound();
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: ExerciseLogs/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var exerciseLog = await _context.ExerciseLogs
                 .Include(e => e.ExerciseType)
                 .Include(e => e.ExercisedBy)
                 .Include(e => e.TrainingSession)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (exerciseLog == null)
-            {
-                return NotFound();
-            }
+            if (exerciseLog == null) return NotFound();
 
             return View(exerciseLog);
         }
@@ -173,10 +187,7 @@ namespace BeFit.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var exerciseLog = await _context.ExerciseLogs.FindAsync(id);
-            if (exerciseLog != null)
-            {
-                _context.ExerciseLogs.Remove(exerciseLog);
-            }
+            if (exerciseLog != null) _context.ExerciseLogs.Remove(exerciseLog);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
