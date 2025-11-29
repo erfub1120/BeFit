@@ -36,6 +36,16 @@ namespace BeFit.Data
                 .HasForeignKey(el => el.ExercisedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<TrainingSession>()
+                .HasOne(ts => ts.CreatedBy)
+                .WithMany()
+                .HasForeignKey(ts => ts.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<ExerciseType>().HasData(
+                new ExerciseType { Id = 1, Name = "Bench Press" },
+                new ExerciseType { Id = 2, Name = "Squat" }
+            );
         }
     }
 }
