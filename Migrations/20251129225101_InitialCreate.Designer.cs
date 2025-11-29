@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeFit.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251115082735_UserConnection")]
-    partial class UserConnection
+    [Migration("20251129225101_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.20");
 
             modelBuilder.Entity("BeFit.Models.AppUser", b =>
                 {
@@ -94,7 +94,6 @@ namespace BeFit.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ExercisedById")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Reps")
@@ -134,6 +133,18 @@ namespace BeFit.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExerciseTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Bench Press"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Squat"
+                        });
                 });
 
             modelBuilder.Entity("BeFit.Models.TrainingSession", b =>
@@ -142,6 +153,9 @@ namespace BeFit.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("TEXT");
 
@@ -149,6 +163,8 @@ namespace BeFit.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("TrainingSessions");
                 });
@@ -296,8 +312,7 @@ namespace BeFit.Migrations
                     b.HasOne("BeFit.Models.AppUser", "ExercisedBy")
                         .WithMany()
                         .HasForeignKey("ExercisedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("BeFit.Models.TrainingSession", "TrainingSession")
                         .WithMany()
@@ -310,6 +325,16 @@ namespace BeFit.Migrations
                     b.Navigation("ExercisedBy");
 
                     b.Navigation("TrainingSession");
+                });
+
+            modelBuilder.Entity("BeFit.Models.TrainingSession", b =>
+                {
+                    b.HasOne("BeFit.Models.AppUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
