@@ -1,4 +1,4 @@
-﻿@model BeFit.Models.ExerciseType
+﻿@model BeFit.Models.TrainingSession
 
 @{
     Layout = null;
@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Edit Exercise Type</title>
+    <title>Edit Training Session</title>
     <style>
         body {
             font-family: sans-serif;
@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 420px;
+            max-width: 500px;
             margin: auto;
             background: #fff;
             padding: 32px;
@@ -29,34 +29,35 @@
         }
 
         h2 {
-            margin: 0 0 16px 0;
             font-size: 24px;
             font-weight: 600;
+            margin-bottom: 16px;
         }
 
         label {
-            font-size: 14px;
             display: block;
+            font-size: 14px;
             margin-bottom: 6px;
         }
 
-        input[type="text"] {
+        input[type="text"], input[type="datetime-local"] {
             width: 100%;
             padding: 10px 14px;
             border-radius: 8px;
             border: 1px solid #ccc;
             font-size: 15px;
+            margin-bottom: 12px;
             outline: none;
             transition: border 0.2s;
         }
 
-            input[type="text"]:focus {
-                border-color: #555;
-            }
+        input:focus {
+            border-color: #555;
+        }
 
         .btn-primary {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 12px;
             padding: 12px;
             border: none;
             border-radius: 8px;
@@ -81,14 +82,16 @@
 
         .text-danger {
             font-size: 13px;
-            margin-top: 4px;
             color: #d9534f;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Edit Exercise Type</h2>
+        <h2>Edit Training Session</h2>
 
 
         <form asp-action="Edit">
@@ -98,9 +101,14 @@
             <input type="hidden" asp-for="Id" />
 
 
-            <label asp-for="Name"></label>
-            <input asp-for="Name" type="text" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <label asp-for="StartTime"></label>
+            <input asp-for="StartTime" type="datetime-local" />
+            <span asp-validation-for="StartTime" class="text-danger"></span>
+
+
+            <label asp-for="EndTime"></label>
+            <input asp-for="EndTime" type="datetime-local" />
+            <span asp-validation-for="EndTime" class="text-danger"></span>
 
 
             <button type="submit" class="btn-primary">Save</button>
@@ -109,10 +117,12 @@
 
         <a class="back-link" asp-action="Index">Back to List</a>
     </div>
-</body>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
     }
-}
+</body>
 </html>

@@ -5,62 +5,114 @@
 }
 
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Delete</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delete Exercise Log</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .warning-text {
+            color: #d9534f;
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-box dl {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            row-gap: 10px;
+            column-gap: 12px;
+            margin: 20px 0;
+        }
+
+        .info-box dt {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .info-box dd {
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .btn-danger {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #d9534f;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 20px;
+        }
+
+            .btn-danger:hover {
+                opacity: 0.85;
+            }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h2>Delete Exercise Log</h2>
+        <p class="warning-text">Are you sure you want to delete this record?</p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>ExerciseLog</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExerciseType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExerciseType.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrainingSession)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrainingSession.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Weight)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Weight)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sets)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sets)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Reps)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Reps)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ExercisedBy)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ExercisedBy.Id)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+        <div class="info-box">
+            <dl>
+                <dt>Exercise Type</dt>
+                <dd>@Html.DisplayFor(model => model.ExerciseType.Name)</dd>
+                <dt>Training Session</dt>
+                <dd>@Html.DisplayFor(model => model.TrainingSession.Id)</dd>
+                <dt>Weight</dt>
+                <dd>@Html.DisplayFor(model => model.Weight)</dd>
+                <dt>Sets</dt>
+                <dd>@Html.DisplayFor(model => model.Sets)</dd>
+                <dt>Reps</dt>
+                <dd>@Html.DisplayFor(model => model.Reps)</dd>
+                <dt>Exercised By</dt>
+                <dd>@Html.DisplayFor(model => model.ExercisedBy.UserName)</dd>
+            </dl>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn-danger">Delete</button>
+        </form>
+
+        <a class="back-link" asp-action="Index">Back to List</a>
+    </div>
 </body>
 </html>
+

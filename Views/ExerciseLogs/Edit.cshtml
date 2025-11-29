@@ -5,64 +5,127 @@
 }
 
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Edit</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Edit Exercise Log</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: #f7f7f7;
+            margin: 0;
+            padding: 40px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: #fff;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border 0.2s;
+        }
+
+            select:focus, input:focus {
+                border-color: #555;
+            }
+
+        .btn-primary {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #000;
+            color: #fff;
+            font-size: 15px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+            .btn-primary:hover {
+                opacity: 0.8;
+            }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 18px;
+            font-size: 14px;
+            text-decoration: none;
+            color: #555;
+        }
+
+        .text-danger {
+            font-size: 13px;
+            color: #d9534f;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            display: block;
+        }
+    </style>
 </head>
 <body>
-
-<h4>ExerciseLog</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+    <div class="container">
+        <h2>Edit Exercise Log</h2>
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="ExerciseTypeId" class="control-label"></label>
-                <select asp-for="ExerciseTypeId" class="form-control" asp-items="ViewBag.ExerciseTypeId"></select>
-                <span asp-validation-for="ExerciseTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TrainingSessionId" class="control-label"></label>
-                <select asp-for="TrainingSessionId" class="form-control" asp-items="ViewBag.TrainingSessionId"></select>
-                <span asp-validation-for="TrainingSessionId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Weight" class="control-label"></label>
-                <input asp-for="Weight" class="form-control" />
-                <span asp-validation-for="Weight" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Sets" class="control-label"></label>
-                <input asp-for="Sets" class="form-control" />
-                <span asp-validation-for="Sets" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reps" class="control-label"></label>
-                <input asp-for="Reps" class="form-control" />
-                <span asp-validation-for="Reps" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ExercisedById" class="control-label"></label>
-                <select asp-for="ExercisedById" class="form-control" asp-items="ViewBag.ExercisedById"></select>
-                <span asp-validation-for="ExercisedById" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+
+            <label asp-for="ExerciseTypeId"></label>
+            <select asp-for="ExerciseTypeId" class="form-control" asp-items="@(ViewData["ExerciseTypeId"] as SelectList)"></select>
+            <span asp-validation-for="ExerciseTypeId" class="text-danger"></span>
+
+            <label asp-for="TrainingSessionId"></label>
+            <select asp-for="TrainingSessionId" class="form-control" asp-items="@(ViewData["TrainingSessionId"] as SelectList)"></select>
+            <span asp-validation-for="TrainingSessionId" class="text-danger"></span>
+
+            <label asp-for="Weight"></label>
+            <input asp-for="Weight" type="number" class="form-control" step="0.01" />
+            <span asp-validation-for="Weight" class="text-danger"></span>
+
+            <label asp-for="Sets"></label>
+            <input asp-for="Sets" type="number" class="form-control" />
+            <span asp-validation-for="Sets" class="text-danger"></span>
+
+            <label asp-for="Reps"></label>
+            <input asp-for="Reps" type="number" class="form-control" />
+            <span asp-validation-for="Reps" class="text-danger"></span>
+
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
+        <a class="back-link" asp-action="Index">Back to List</a>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
 </body>
 </html>
+

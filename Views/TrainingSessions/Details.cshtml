@@ -1,4 +1,4 @@
-﻿@model BeFit.Models.ExerciseLog
+﻿@model BeFit.Models.TrainingSession
 
 @{
     Layout = null;
@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Exercise Log Details</title>
+    <title>Training Session Details</title>
     <style>
         body {
             font-family: sans-serif;
@@ -18,7 +18,6 @@
             padding: 40px;
             color: #333;
         }
-
         .container {
             max-width: 600px;
             margin: auto;
@@ -27,13 +26,11 @@
             border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-
         h2 {
             font-size: 24px;
             font-weight: 600;
             margin-bottom: 16px;
         }
-
         .info-box dl {
             display: grid;
             grid-template-columns: 150px 1fr;
@@ -41,23 +38,19 @@
             column-gap: 12px;
             margin: 20px 0;
         }
-
         .info-box dt {
             font-weight: 600;
             font-size: 14px;
         }
-
         .info-box dd {
             font-size: 15px;
             margin: 0;
         }
-
         .actions {
             margin-top: 24px;
             display: flex;
             gap: 16px;
         }
-
         .action-link {
             font-size: 14px;
             text-decoration: none;
@@ -67,30 +60,20 @@
             border-radius: 8px;
             transition: opacity 0.2s;
         }
-
-            .action-link:hover {
-                opacity: 0.7;
-            }
+        .action-link:hover {
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Exercise Log Details</h2>
+        <h2>Training Session Details</h2>
 
         <div class="info-box">
             <dl>
-                <dt>Exercise Type</dt>
-                <dd>@Html.DisplayFor(model => model.ExerciseType.Name)</dd>
-                <dt>Training Session</dt>
-                <dd>@Html.DisplayFor(model => model.TrainingSession.Id)</dd>
-                <dt>Weight</dt>
-                <dd>@Html.DisplayFor(model => model.Weight)</dd>
-                <dt>Sets</dt>
-                <dd>@Html.DisplayFor(model => model.Sets)</dd>
-                <dt>Reps</dt>
-                <dd>@Html.DisplayFor(model => model.Reps)</dd>
-                <dt>Exercised By</dt>
-                <dd>@Html.DisplayFor(model => model.ExercisedBy.UserName)</dd>
+                <dt>Start Time</dt><dd>@Html.DisplayFor(model => model.StartTime)</dd>
+                <dt>End Time</dt><dd>@Html.DisplayFor(model => model.EndTime)</dd>
+                <dt>Created By</dt><dd>@Html.DisplayFor(model => model.CreatedBy.Id)</dd>
             </dl>
         </div>
 
